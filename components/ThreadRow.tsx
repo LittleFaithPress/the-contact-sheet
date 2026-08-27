@@ -10,6 +10,7 @@ type ThreadRowProps = {
   body: string;
   createdAt: string;
   username: string;
+  authorBanned?: boolean;
   category: string;
   pinned: boolean;
   replyCount: number;
@@ -27,6 +28,7 @@ export default function ThreadRow({
   body,
   createdAt,
   username,
+  authorBanned = false,
   category,
   pinned,
   replyCount,
@@ -59,6 +61,7 @@ export default function ThreadRow({
         <div className="flex items-center gap-2">
           <Avatar username={username} />
           <span>{username}</span>
+          {authorBanned && <Pill tone="danger">Banned</Pill>}
         </div>
         {(canDelete || isAdmin) && (
           <div className="flex items-center gap-3">
