@@ -25,3 +25,4 @@ export const MAX_THREAD_IMAGE_BYTES = 30 * 1024 * 1024; // 30 MB, matches the bu
 // what actually drives file size down.
 export const THREAD_IMAGE_RESIZE_MAX_DIMENSION = 2560;
 export const THREAD_IMAGE_RESIZE_JPEG_QUALITY = 0.85;
+
