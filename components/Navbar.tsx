@@ -11,13 +11,15 @@ export default async function Navbar() {
 
   let username: string | null = null;
   let isAdmin = false;
+  let isBanned = false;
   if (user) {
     const [{ data: profile }, { data: adminCheck }] = await Promise.all([
-      supabase.from("profiles").select("username").eq("id", user.id).single(),
+      supabase.from("profiles").select("username, banned").eq("id", user.id).single(),
       supabase.rpc("am_i_admin"),
     ]);
     username = profile?.username ?? null;
     isAdmin = adminCheck === true;
+    isBanned = profile?.banned === true;
   }
 
   return (
@@ -44,6 +46,7 @@ export default async function Navbar() {
               <span className="flex items-center gap-1.5 text-cream/60">
                 {username ?? user.email}
                 {isAdmin && <Pill tone="sage">Admin</Pill>}
+                {isBanned && <Pill tone="danger">Banned</Pill>}
               </span>
               <SignOutButton />
             </>
