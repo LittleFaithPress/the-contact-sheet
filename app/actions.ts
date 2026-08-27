@@ -139,6 +139,15 @@ export async function createThread(formData: FormData) {
     return { error: "You need to sign in to start a thread." };
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("banned")
+    .eq("id", user.id)
+    .single();
+  if (profile?.banned) {
+    return { error: "Your account has been banned from posting." };
+  }
+
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   const category = String(formData.get("category") ?? "General").trim();
@@ -179,6 +188,15 @@ export async function createReply(threadId: string, formData: FormData) {
 
   if (!user) {
     return { error: "You need to sign in to reply." };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("banned")
+    .eq("id", user.id)
+    .single();
+  if (profile?.banned) {
+    return { error: "Your account has been banned from posting." };
   }
 
   const body = String(formData.get("body") ?? "").trim();
@@ -287,6 +305,15 @@ export async function uploadResource(formData: FormData) {
 
   if (!user) {
     return { error: "You need to sign in to upload." };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("banned")
+    .eq("id", user.id)
+    .single();
+  if (profile?.banned) {
+    return { error: "Your account has been banned from posting." };
   }
 
   const title = String(formData.get("title") ?? "").trim();
@@ -446,5 +473,75 @@ export async function deleteResource(id: string) {
 
   revalidatePath("/downloads");
   revalidatePath("/downloads/review");
+  return { error: null };
+}
+
+// --- Membership -----------------------------------------------------------
+// Same defense-in-depth pattern as everything else here: these checks exist
+// for a fast, friendly error message. The real gate is the database --
+// supabase/009_ban_members.sql adds a policy plus a trigger that only ever
+// lets an admin flip someone ELSE's `banned` column, blocks self-ban and
+// self-unban entirely (admin included), and blocks bundling any other
+// profile change in with a ban toggle. That's what was actually tested
+// against a live database, not this code.
+//
+// Banning never deletes anything -- a banned member's past threads and
+// replies stay exactly where they are, visible to everyone. All this stops
+// is future posts, replies, and uploads from that account.
+
+export async function banMember(userId: string) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You need to sign in." };
+  }
+  if (user.id === userId) {
+    return { error: "You can't ban yourself." };
+  }
+
+  const { data: isAdmin } = await supabase.rpc("am_i_admin");
+  if (!isAdmin) {
+    return { error: "Only admins can ban a member." };
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ banned: true })
+    .eq("id", userId);
+
+  if (error) return { error: "Couldn't ban that member. Try again in a moment." };
+
+  revalidatePath("/");
+  revalidatePath("/downloads");
+  return { error: null };
+}
+
+export async function unbanMember(userId: string) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You need to sign in." };
+  }
+
+  const { data: isAdmin } = await supabase.rpc("am_i_admin");
+  if (!isAdmin) {
+    return { error: "Only admins can unban a member." };
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ banned: false })
+    .eq("id", userId);
+
+  if (error) return { error: "Couldn't unban that member. Try again in a moment." };
+
+  revalidatePath("/");
+  revalidatePath("/downloads");
   return { error: null };
 }
