@@ -27,12 +27,24 @@ export default async function ThreadPage({ params }: { params: { id: string } })
   const { data: thread, error: threadError } = await supabase
     .from("threads")
     .select(
-      "id, title, body, created_at, author_id, category, pinned, profiles(username, banned)"
+      "id, title, body, created_at, author_id, category, pinned, image_path, profiles(username, banned)"
     )
     .eq("id", params.id)
     .single();
 
   if (threadError || !thread) notFound();
+
+  // The bucket is deliberately not public (see the migration) -- this
+  // signed URL is the actual mechanism that makes the photo viewable, not
+  // just a plain link straight to the file. It expires after an hour, same
+  // as the Downloads page's file links.
+  let imageUrl: string | null = null;
+  if (thread.image_path) {
+    const { data: signed } = await supabase.storage
+      .from("thread-images")
+      .createSignedUrl(thread.image_path, 3600);
+    imageUrl = signed?.signedUrl ?? null;
+  }
 
   const { data: replies } = await supabase
     .from("replies")
@@ -97,6 +109,17 @@ export default async function ThreadPage({ params }: { params: { id: string } })
             </>
           )}
         </div>
+
+        {imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element -- a signed
+          // URL is short-lived and per-request, so next/image's caching
+          // layer isn't a good fit here; a plain <img> is simpler and correct.
+          <img
+            src={imageUrl}
+            alt={thread.title}
+            className="mt-4 max-h-[70vh] w-full rounded-lg border border-navy-700 object-contain"
+          />
+        )}
 
         <p className="mt-4 whitespace-pre-wrap text-cream/80">{thread.body}</p>
       </div>
