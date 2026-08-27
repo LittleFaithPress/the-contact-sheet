@@ -1,3 +1,15 @@
+// Derived from the Supabase project URL so the Content-Security-Policy
+// below can allow images loaded straight from Supabase Storage (thread
+// photos, Downloads page previews) without hardcoding this project's
+// specific ref -- if this ever points at a different Supabase project, this
+// stays correct automatically.
+let supabaseOrigin = "";
+try {
+  supabaseOrigin = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "").origin;
+} catch {
+  supabaseOrigin = "";
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -51,7 +63,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;",
+              `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:${supabaseOrigin ? ` ${supabaseOrigin}` : ""}; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;`,
           },
         ],
       },
