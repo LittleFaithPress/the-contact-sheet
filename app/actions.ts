@@ -10,8 +10,20 @@ import {
   MAX_RESOURCE_FILE_BYTES,
 } from "@/lib/resourceCategories";
 import { submitFileForScan } from "@/lib/virustotal";
+import { ALLOWED_THREAD_IMAGE_MIME_TYPES, MAX_THREAD_IMAGE_BYTES } from "@/lib/threadImage";
 
 // --- Auth -----------------------------------------------------------------
+
+// Cloudflare Turnstile (components/Turnstile.tsx) injects its token into
+// this field name automatically once someone completes the widget. This is
+// undefined when Turnstile isn't configured yet, or hasn't been completed --
+// Supabase only actually requires it once CAPTCHA protection is turned on
+// under Authentication -> Attack Protection in the Supabase dashboard, so
+// this stays harmless either way.
+function getCaptchaToken(formData: FormData): string | undefined {
+  const token = String(formData.get("cf-turnstile-response") ?? "").trim();
+  return token || undefined;
+}
 
 export async function signUp(formData: FormData) {
   const email = String(formData.get("email") ?? "");
@@ -34,7 +46,7 @@ export async function signUp(formData: FormData) {
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { username } },
+    options: { data: { username }, captchaToken: getCaptchaToken(formData) },
   });
 
   if (error) return { error: error.message };
@@ -49,7 +61,11 @@ export async function signIn(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
   const supabase = createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    options: { captchaToken: getCaptchaToken(formData) },
+  });
 
   if (error) return { error: error.message };
 
@@ -91,6 +107,7 @@ export async function requestPasswordReset(formData: FormData) {
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
+    captchaToken: getCaptchaToken(formData),
   });
 
   // Same response whether or not that email has an account -- this can't be
@@ -164,9 +181,42 @@ export async function createThread(formData: FormData) {
     return { error: "Pick a valid category." };
   }
 
+  // The photo is optional -- an empty file input still shows up in
+  // FormData as a zero-byte File, so treat that the same as "no file
+  // chosen" rather than trying to upload it.
+  const image = formData.get("image") as File | null;
+  const hasImage = !!image && image.size > 0;
+
+  if (hasImage) {
+    if (image.size > MAX_THREAD_IMAGE_BYTES) {
+      return { error: "That photo is too large, even after resizing. Try a smaller image." };
+    }
+    if (!(ALLOWED_THREAD_IMAGE_MIME_TYPES as readonly string[]).includes(image.type)) {
+      return { error: "That file type isn't supported. JPG, PNG, WebP, or GIF only." };
+    }
+  }
+
+  // Uploaded before the thread row exists -- the path only depends on the
+  // user's own id, not the thread's, so there's no ordering problem. If the
+  // thread insert below fails, the file is cleaned up so nothing orphaned
+  // is left sitting in storage with no thread pointing at it.
+  let imagePath: string | null = null;
+  if (hasImage) {
+    const safeName = image.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
+    imagePath = `${user.id}/${crypto.randomUUID()}-${safeName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("thread-images")
+      .upload(imagePath, image, { contentType: image.type });
+
+    if (uploadError) {
+      return { error: "Couldn't upload that photo. Try again in a moment." };
+    }
+  }
+
   const { data, error } = await supabase
     .from("threads")
-    .insert({ title, body, category, author_id: user.id })
+    .insert({ title, body, category, author_id: user.id, image_path: imagePath })
     .select("id")
     .single();
 
@@ -174,7 +224,12 @@ export async function createThread(formData: FormData) {
   // visitor -- it can name internal table/column/constraint names. The
   // validation above already rules out the common causes, so anything that
   // still reaches here is unexpected.
-  if (error) return { error: "Couldn't post that thread. Try again in a moment." };
+  if (error) {
+    if (imagePath) {
+      await supabase.storage.from("thread-images").remove([imagePath]);
+    }
+    return { error: "Couldn't post that thread. Try again in a moment." };
+  }
 
   revalidatePath("/");
   redirect(`/thread/${data.id}`);
@@ -231,8 +286,21 @@ export async function deleteThread(threadId: string) {
     return { error: "You need to sign in." };
   }
 
+  // Fetched before the delete so there's still something to clean up
+  // afterward -- the row (and this value with it) is gone the moment the
+  // delete below succeeds.
+  const { data: thread } = await supabase
+    .from("threads")
+    .select("image_path")
+    .eq("id", threadId)
+    .single();
+
   const { error } = await supabase.from("threads").delete().eq("id", threadId);
   if (error) return { error: "Couldn't delete that thread. Try again in a moment." };
+
+  if (thread?.image_path) {
+    await supabase.storage.from("thread-images").remove([thread.image_path]);
+  }
 
   revalidatePath("/");
   redirect("/");
