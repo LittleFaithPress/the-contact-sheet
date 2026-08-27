@@ -13,10 +13,22 @@ export default async function NewThreadPage() {
 
   if (!user) redirect("/login");
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("banned")
+    .eq("id", user.id)
+    .single();
+
   return (
     <div className="space-y-6">
       <h1 className="font-serif text-2xl italic text-cream">Start a new thread</h1>
-      <NewThreadForm />
+      {profile?.banned ? (
+        <p className="rounded-xl border border-red-500/30 bg-navy-900 p-4 text-sm text-cream/70">
+          Your account has been banned from posting.
+        </p>
+      ) : (
+        <NewThreadForm />
+      )}
     </div>
   );
 }
