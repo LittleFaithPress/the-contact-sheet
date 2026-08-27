@@ -3,11 +3,13 @@ export default function Pill({
   tone = "muted",
 }: {
   children: React.ReactNode;
-  tone?: "muted" | "sage";
+  tone?: "muted" | "sage" | "danger";
 }) {
   const toneClasses =
     tone === "sage"
       ? "border-sage-500/40 text-sage-400"
+      : tone === "danger"
+      ? "border-red-500/40 text-red-400"
       : "border-navy-600 text-cream/55";
 
   return (
