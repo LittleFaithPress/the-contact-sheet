@@ -21,7 +21,7 @@ export default async function HomePage({
   let query = supabase
     .from("threads")
     .select(
-      "id, title, body, created_at, author_id, category, pinned, profiles(username), replies(count)"
+      "id, title, body, created_at, author_id, category, pinned, profiles(username, banned), replies(count)"
     )
     .order("pinned", { ascending: false })
     .order("created_at", { ascending: false });
@@ -136,6 +136,7 @@ export default async function HomePage({
                 body={t.body}
                 createdAt={t.created_at}
                 username={t.profiles?.username ?? "unknown"}
+                authorBanned={t.profiles?.banned === true}
                 category={t.category}
                 pinned={t.pinned}
                 replyCount={t.replies?.[0]?.count ?? 0}
