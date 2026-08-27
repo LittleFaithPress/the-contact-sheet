@@ -184,3 +184,4 @@ export default async function ThreadPage({ params }: { params: { id: string } })
     </div>
   );
 }
+
