@@ -11,6 +11,7 @@ import {
 } from "@/lib/resourceCategories";
 import { submitFileForScan } from "@/lib/virustotal";
 import { ALLOWED_THREAD_IMAGE_MIME_TYPES, MAX_THREAD_IMAGE_BYTES } from "@/lib/threadImage";
+import { LEGAL_DOCS_VERSION } from "@/lib/legalVersions";
 
 // --- Auth -----------------------------------------------------------------
 
@@ -31,9 +32,18 @@ export async function signUp(formData: FormData) {
   const username = String(formData.get("username") ?? "").trim();
   const ageRaw = String(formData.get("age") ?? "");
   const age = Number.parseInt(ageRaw, 10);
+  const agreedToLegalDocs = formData.get("agreeToTerms") === "on";
 
   if (!email || !password || !username || !ageRaw) {
     return { error: "Fill in all fields." };
+  }
+  // Backstops the form's own `required` on the checkbox -- a direct request
+  // could simply omit it. This is the layer that actually matters: an
+  // account is never created without it, regardless of what the page shows.
+  if (!agreedToLegalDocs) {
+    return {
+      error: "You must agree to the Terms of Service and Privacy Policy to create an account.",
+    };
   }
   if (username.length < 3 || username.length > 24) {
     return { error: "Username must be 3-24 characters." };
@@ -72,10 +82,20 @@ export async function signUp(formData: FormData) {
     return { error: "You must be 18 or older to join The Contact Sheet." };
   }
 
+  // The exact version of the Terms/Privacy/Rules/Security pages they saw,
+  // and a server-generated (not browser-supplied) timestamp -- both go into
+  // profiles via handle_new_user(), see supabase/012_terms_acceptance.sql.
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { username }, captchaToken: getCaptchaToken(formData) },
+    options: {
+      data: {
+        username,
+        legal_docs_version: LEGAL_DOCS_VERSION,
+        legal_docs_accepted_at: new Date().toISOString(),
+      },
+      captchaToken: getCaptchaToken(formData),
+    },
   });
 
   if (error) return { error: error.message };
