@@ -8,9 +8,13 @@
 // in-page/injected JavaScript can read the session token, secure so the
 // cookie is never sent over a plain http:// connection in production, and
 // sameSite: "lax" so another site can't ride the browser's session cookie
-// along on a request it triggers.
+// along on a request it triggers. setAll also runs every cookie through
+// sessionScopedCookieOptions() -- see that file -- so the session cookie
+// itself expires when the browser fully closes, instead of staying signed
+// in for 400 days.
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { sessionScopedCookieOptions } from "./sessionScopedCookie";
 
 export function createClient() {
   const cookieStore = cookies();
@@ -31,7 +35,7 @@ export function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
+              cookieStore.set(name, value, sessionScopedCookieOptions(options));
             });
           } catch {
             // Called from a Server Component that can't set cookies directly;
