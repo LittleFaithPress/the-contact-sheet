@@ -37,6 +37,8 @@ export default function RulesPage() {
           Post your own photos, or work you have clear permission to post. That applies to thread
           photos and to anything submitted on the Downloads page (guides, LUTs, preset packs) —
           don&rsquo;t upload someone else&rsquo;s paid product or unlicensed work as your own.
+          Both upload paths ask you to confirm this directly — you made it yourself, including
+          with AI tools, or otherwise have the right to share it — before it goes through.
         </p>
       </LegalSection>
 
