@@ -1,4 +1,5 @@
 import LegalPage, { LegalSection } from "@/components/LegalPage";
+import { RULES_VERSION } from "@/lib/legalVersions";
 
 export const metadata = {
   title: "Community Rules — The Contact Sheet",
@@ -10,7 +11,7 @@ export default function RulesPage() {
       eyebrow="Real Feedback, No Like-and-Run"
       title="Community Rules"
       intro="The Contact Sheet only works if the feedback here is actually useful. These are the standards that keep it that way."
-      version="rules-2026-08-28-v1"
+      version={RULES_VERSION}
       published="August 28, 2026"
       reviewNote="These are the current enforceable standards for the site. Formal appeals process and any jurisdiction-specific safety requirements haven't had legal review yet."
     >
