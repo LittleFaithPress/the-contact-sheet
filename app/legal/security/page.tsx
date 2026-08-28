@@ -10,7 +10,7 @@ export default function SecurityPage() {
       eyebrow="How It's Actually Protected"
       title="Security & Privacy"
       intro="A plain-language walkthrough of the protections already built into The Contact Sheet, and what's still a known gap."
-      version="security-2026-08-28-v1"
+      version="security-2026-08-28-v2"
       published="August 28, 2026"
       reviewNote="Everything below describes measures that are actually implemented, not planned. It's reviewed and strengthened as the site grows, not a one-time checklist."
     >
@@ -62,6 +62,19 @@ export default function SecurityPage() {
           the app&rsquo;s UI — and it&rsquo;s deliberately one-directional: it blocks new posts
           from that account without touching anything already posted. Only an admin can ban or
           unban a member, and an admin cannot change their own banned status.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="A known gap: the age gate is self-reported">
+        <p>
+          Signup requires answering that you&rsquo;re 18 or older. Like almost every site that
+          isn&rsquo;t requiring a government ID, that answer is self-reported and can&rsquo;t be
+          independently verified — what it actually stops is the same email retrying immediately
+          after answering honestly, not a determined person lying the first time or using a
+          different email. A more complete fix (a Supabase &ldquo;Before User Created&rdquo; hook
+          that enforces this inside Supabase&rsquo;s own signup flow, closing the gap where
+          someone could bypass this site entirely and call Supabase directly) is a known follow-up,
+          not yet set up.
         </p>
       </LegalSection>
 
