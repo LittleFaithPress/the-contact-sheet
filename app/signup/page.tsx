@@ -78,6 +78,54 @@ export default function SignupPage() {
             check — it isn&rsquo;t saved to your profile.
           </p>
         </div>
+        <div className="flex items-start gap-2.5">
+          <input
+            type="checkbox"
+            name="agreeToTerms"
+            id="agreeToTerms"
+            required
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-navy-600 bg-navy-900 text-sage-500 focus:ring-sage-500"
+          />
+          <label htmlFor="agreeToTerms" className="text-xs leading-relaxed text-cream/70">
+            I&rsquo;ve read and agree to the{" "}
+            <Link
+              href="/legal/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sage-400 underline hover:text-sage-300"
+            >
+              Terms of Service
+            </Link>
+            ,{" "}
+            <Link
+              href="/legal/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sage-400 underline hover:text-sage-300"
+            >
+              Privacy Policy
+            </Link>
+            ,{" "}
+            <Link
+              href="/legal/rules"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sage-400 underline hover:text-sage-300"
+            >
+              Community Rules
+            </Link>
+            , and{" "}
+            <Link
+              href="/legal/security"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sage-400 underline hover:text-sage-300"
+            >
+              Security &amp; Privacy
+            </Link>{" "}
+            pages.
+          </label>
+        </div>
         <Turnstile />
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button
