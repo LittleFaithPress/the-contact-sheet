@@ -1,4 +1,5 @@
 import LegalPage, { LegalSection } from "@/components/LegalPage";
+import { SECURITY_VERSION } from "@/lib/legalVersions";
 
 export const metadata = {
   title: "Security & Privacy — The Contact Sheet",
@@ -10,7 +11,7 @@ export default function SecurityPage() {
       eyebrow="How It's Actually Protected"
       title="Security & Privacy"
       intro="A plain-language walkthrough of the protections already built into The Contact Sheet, and what's still a known gap."
-      version="security-2026-08-28-v2"
+      version={SECURITY_VERSION}
       published="August 28, 2026"
       reviewNote="Everything below describes measures that are actually implemented, not planned. It's reviewed and strengthened as the site grows, not a one-time checklist."
     >
