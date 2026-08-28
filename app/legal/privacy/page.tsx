@@ -10,7 +10,7 @@ export default function PrivacyPage() {
       eyebrow="Your Information"
       title="Privacy Policy"
       intro="A description of exactly what The Contact Sheet stores and why — grounded in what the app actually does, not a generic template."
-      version="privacy-2026-08-28-v1"
+      version="privacy-2026-08-28-v2"
       published="August 28, 2026"
       reviewNote="This draft is grounded in the implemented application, not guessed at. Final retention timelines and any jurisdiction-specific rights (like GDPR or CCPA requests) still need legal review before this is treated as a complete policy."
     >
@@ -19,6 +19,17 @@ export default function PrivacyPage() {
           Signing up asks for a username, an email address, and a password. The password itself
           is handled entirely by Supabase Auth (the site&rsquo;s authentication provider) — the
           app never sees or stores it in plain text.
+        </p>
+        <p>
+          Signup also asks your age, as a plain number, solely to confirm you&rsquo;re 18 or
+          older. That number is used once, for that check, and is never saved — not to your
+          profile, not anywhere. The one thing that IS kept: if you enter an age under 18, the
+          email address you typed is stored in a blocklist so the same email can&rsquo;t be
+          resubmitted. See{" "}
+          <a href="/legal/terms" className="text-sage-400 underline hover:text-sage-300">
+            Terms of Service
+          </a>{" "}
+          section 4 for the full picture, including this check&rsquo;s real limits.
         </p>
         <p>
           Beyond that, The Contact Sheet stores whatever you actually post: thread titles and
