@@ -29,8 +29,10 @@ export async function signUp(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
   const username = String(formData.get("username") ?? "").trim();
+  const ageRaw = String(formData.get("age") ?? "");
+  const age = Number.parseInt(ageRaw, 10);
 
-  if (!email || !password || !username) {
+  if (!email || !password || !username || !ageRaw) {
     return { error: "Fill in all fields." };
   }
   if (username.length < 3 || username.length > 24) {
@@ -41,8 +43,35 @@ export async function signUp(formData: FormData) {
   if (password.length < 8) {
     return { error: "Password must be at least 8 characters." };
   }
+  // Backstops the form's own min/max on the age field, same reasoning as
+  // password length above -- a direct request could send anything.
+  if (!Number.isInteger(age) || age < 1 || age > 120) {
+    return { error: "Enter a real age." };
+  }
 
   const supabase = createClient();
+
+  // Age gate -- self-reported, nothing here is stored except (if this
+  // fails) the email itself, so a second attempt with the same email is
+  // blocked without ever having to remember anyone's actual age. See
+  // supabase/011_signup_age_gate.sql for the honest limits of what this
+  // does and doesn't actually stop.
+  const { data: alreadyBlocked, error: blockedCheckError } = await supabase.rpc(
+    "is_email_signup_blocked",
+    { p_email: email }
+  );
+  if (blockedCheckError) return { error: blockedCheckError.message };
+  if (alreadyBlocked) {
+    return { error: "This email can't be used to sign up." };
+  }
+  if (age < 18) {
+    const { error: recordError } = await supabase.rpc("record_blocked_signup_email", {
+      p_email: email,
+    });
+    if (recordError) return { error: recordError.message };
+    return { error: "You must be 18 or older to join The Contact Sheet." };
+  }
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
