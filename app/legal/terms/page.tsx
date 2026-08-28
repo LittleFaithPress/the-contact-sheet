@@ -1,4 +1,5 @@
 import LegalPage, { LegalSection } from "@/components/LegalPage";
+import { TERMS_VERSION } from "@/lib/legalVersions";
 
 export const metadata = {
   title: "Terms of Service — The Contact Sheet",
@@ -10,7 +11,7 @@ export default function TermsPage() {
       eyebrow="The Agreement"
       title="Terms of Service"
       intro="These terms cover how The Contact Sheet actually works today: what reading and posting require, who owns your work, and what happens when the rules aren't followed."
-      version="terms-2026-08-28-v3"
+      version={TERMS_VERSION}
       published="August 28, 2026"
       reviewNote="This is a working draft written to match how the site is actually built, not final legal advice — none of it has had an actual lawyer's review yet."
     >
@@ -87,21 +88,36 @@ export default function TermsPage() {
 
       <LegalSection title="6. Limitation of liability">
         <p>
-          The Contact Sheet is provided &ldquo;as is,&rdquo; without warranties of any kind,
-          express or implied — including that it will be uninterrupted, error-free, or free of
-          harmful content posted by other members. To the fullest extent the law allows, the
-          site&rsquo;s operator is not liable for indirect, incidental, or consequential damages
-          arising from your use of the site or from content posted by anyone else, including
-          thread photos, replies, or anything shared on the Downloads page.
+          You use The Contact Sheet — and any content posted by you or any other member, including
+          threads, replies, thread photos, and anything shared on the Downloads page — entirely at
+          your own risk. The site is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo;
+          without warranties of any kind, express or implied, including that it will be
+          uninterrupted, error-free, or free of harmful content.
         </p>
         <p>
-          If you download a file from the Downloads page, you do so at your own risk. Files are
-          reviewed by an admin and, when a scanning key is configured, automatically checked with
-          VirusTotal before approval (see{" "}
+          To the fullest extent the law allows, The Contact Sheet&rsquo;s operator is not liable
+          for any damages of any kind arising from your use of the site or from content posted by
+          anyone else — including direct, indirect, incidental, special, consequential, exemplary,
+          or punitive damages — whether the claim is based on contract, tort, or any other legal
+          theory, and even if the operator was advised such damages were possible.
+        </p>
+        <p>
+          If you download a file from the Downloads page, that download is also entirely at your
+          own risk. Files are reviewed by an admin and, when a scanning key is configured,
+          automatically checked with VirusTotal before approval (see{" "}
           <a href="/legal/security" className="text-sage-400 underline hover:text-sage-300">
             Security &amp; Privacy
           </a>
           ) — but that review is a precaution, not a guarantee that any file is safe.
+        </p>
+        <p>
+          A note on what a clause like this can actually do: broad as this language is, most
+          states — Illinois included — don&rsquo;t let a website&rsquo;s terms eliminate liability
+          in every circumstance (claims involving gross negligence, willful misconduct, or certain
+          consumer-protection statutes typically can&rsquo;t be waived this way). This section
+          states the broadest protection available, not a guarantee that no claim could ever
+          succeed — that call belongs to an actual lawyer familiar with Illinois law, not this
+          page.
         </p>
       </LegalSection>
 
