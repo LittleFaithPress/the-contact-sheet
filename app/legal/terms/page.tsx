@@ -10,9 +10,9 @@ export default function TermsPage() {
       eyebrow="The Agreement"
       title="Terms of Service"
       intro="These terms cover how The Contact Sheet actually works today: what reading and posting require, who owns your work, and what happens when the rules aren't followed."
-      version="terms-2026-08-28-v2"
+      version="terms-2026-08-28-v3"
       published="August 28, 2026"
-      reviewNote="This is a working draft written to match how the site is actually built, not final legal advice. Section 9's governing-law clause still needs your home state filled in (marked clearly below) — everything else reflects the site as built, but none of it has had an actual lawyer's review yet."
+      reviewNote="This is a working draft written to match how the site is actually built, not final legal advice — none of it has had an actual lawyer's review yet."
     >
       <LegalSection title="1. Reading vs. posting">
         <p>
@@ -132,11 +132,8 @@ export default function TermsPage() {
 
       <LegalSection title="9. Governing law and disputes">
         <p>
-          These Terms are governed by the laws of the State of{" "}
-          <strong className="rounded bg-sage-500/20 px-1 text-cream">
-            [your state — not yet filled in]
-          </strong>
-          , without regard to its conflict-of-laws rules. Any dispute arising from these Terms or
+          These Terms are governed by the laws of the State of Illinois, without regard to its
+          conflict-of-laws rules. Any dispute arising from these Terms or
           your use of the site is handled in the state or federal courts located there, and by
           creating an account you consent to that jurisdiction — rather than mandatory
           arbitration, which is more suited to larger commercial platforms than a site run by one
@@ -156,10 +153,9 @@ export default function TermsPage() {
       <LegalSection title="11. What still needs legal review">
         <p>
           This draft covers the ground a lawyer would normally flag as missing entirely, but
-          it&rsquo;s still not a substitute for one reviewing it. Specifically still open: Section
-          9&rsquo;s state hasn&rsquo;t been filled in yet; the exact scope of the content license
-          in Section 3 hasn&rsquo;t had formal review; and the final account-deletion and
-          data-retention timeline referenced in the{" "}
+          it&rsquo;s still not a substitute for one reviewing it. Specifically still open: the
+          exact scope of the content license in Section 3 hasn&rsquo;t had formal review; and the
+          final account-deletion and data-retention timeline referenced in the{" "}
           <a href="/legal/privacy" className="text-sage-400 underline hover:text-sage-300">
             Privacy Policy
           </a>{" "}
