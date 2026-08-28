@@ -243,6 +243,12 @@ export async function createThread(formData: FormData) {
     if (!(ALLOWED_THREAD_IMAGE_MIME_TYPES as readonly string[]).includes(image.type)) {
       return { error: "That file type isn't supported. JPG, PNG, WebP, or GIF only." };
     }
+    // Backstops the form's own conditional `required` on this checkbox --
+    // only checked when a photo is actually attached, since the rest of a
+    // thread (title/body) isn't gated on this the same way.
+    if (formData.get("imageRightsAttested") !== "on") {
+      return { error: "Confirm you have the rights to share that photo before posting." };
+    }
   }
 
   // Uploaded before the thread row exists -- the path only depends on the
@@ -265,7 +271,14 @@ export async function createThread(formData: FormData) {
 
   const { data, error } = await supabase
     .from("threads")
-    .insert({ title, body, category, author_id: user.id, image_path: imagePath })
+    .insert({
+      title,
+      body,
+      category,
+      author_id: user.id,
+      image_path: imagePath,
+      image_rights_attested_at: hasImage ? new Date().toISOString() : null,
+    })
     .select("id")
     .single();
 
@@ -456,6 +469,11 @@ export async function uploadResource(formData: FormData) {
   if (!(ALLOWED_RESOURCE_MIME_TYPES as readonly string[]).includes(file.type)) {
     return { error: "That file type isn't allowed. PDFs, ZIP archives, and images only." };
   }
+  // Backstops the form's own `required` on this checkbox -- a direct
+  // request could simply omit it.
+  if (formData.get("rightsAttested") !== "on") {
+    return { error: "Confirm you have the rights to share this file before submitting." };
+  }
 
   // Strip the filename down to safe characters -- it becomes part of the
   // storage path, and the original is kept separately (file_name) to show
@@ -482,6 +500,7 @@ export async function uploadResource(formData: FormData) {
       file_size: file.size,
       mime_type: file.type,
       uploader_id: user.id,
+      rights_attested_at: new Date().toISOString(),
     })
     .select("id")
     .single();
