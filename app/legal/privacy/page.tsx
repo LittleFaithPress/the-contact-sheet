@@ -1,4 +1,5 @@
 import LegalPage, { LegalSection } from "@/components/LegalPage";
+import { PRIVACY_VERSION } from "@/lib/legalVersions";
 
 export const metadata = {
   title: "Privacy Policy — The Contact Sheet",
@@ -10,7 +11,7 @@ export default function PrivacyPage() {
       eyebrow="Your Information"
       title="Privacy Policy"
       intro="A description of exactly what The Contact Sheet stores and why — grounded in what the app actually does, not a generic template."
-      version="privacy-2026-08-28-v2"
+      version={PRIVACY_VERSION}
       published="August 28, 2026"
       reviewNote="This draft is grounded in the implemented application, not guessed at. Final retention timelines and any jurisdiction-specific rights (like GDPR or CCPA requests) still need legal review before this is treated as a complete policy."
     >
