@@ -6,9 +6,9 @@
 //
 // Bump the relevant constant any time that page's substance changes.
 
-export const TERMS_VERSION = "terms-2026-08-28-v4";
-export const PRIVACY_VERSION = "privacy-2026-08-28-v2";
-export const RULES_VERSION = "rules-2026-08-28-v1";
+export const TERMS_VERSION = "terms-2026-08-28-v5";
+export const PRIVACY_VERSION = "privacy-2026-08-28-v3";
+export const RULES_VERSION = "rules-2026-08-28-v2";
 export const SECURITY_VERSION = "security-2026-08-28-v2";
 
 // What actually gets recorded when someone checks "I agree" at signup --
@@ -20,4 +20,3 @@ export const LEGAL_DOCS_VERSION = [
   RULES_VERSION,
   SECURITY_VERSION,
 ].join("+");
-
