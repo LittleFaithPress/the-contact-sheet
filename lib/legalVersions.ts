@@ -20,3 +20,4 @@ export const LEGAL_DOCS_VERSION = [
   RULES_VERSION,
   SECURITY_VERSION,
 ].join("+");
+
