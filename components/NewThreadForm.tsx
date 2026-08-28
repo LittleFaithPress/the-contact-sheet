@@ -63,6 +63,7 @@ async function resizeImageForUpload(file: File): Promise<File> {
 export default function NewThreadForm() {
   const [error, setError] = useState<string | null>(null);
   const [resizing, setResizing] = useState(false);
+  const [hasImage, setHasImage] = useState(false);
 
   async function handleSubmit(formData: FormData) {
     const image = formData.get("image") as File | null;
@@ -126,6 +127,7 @@ export default function NewThreadForm() {
           type="file"
           name="image"
           accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={(e) => setHasImage(!!e.target.files?.[0] && e.target.files[0].size > 0)}
           className="w-full rounded-md border border-navy-600 bg-navy-900 p-2 text-sm text-cream/80 file:mr-3 file:rounded-full file:border-0 file:bg-sage-500 file:px-3 file:py-1 file:text-xs file:font-medium file:text-navy-950"
         />
         <p className="mt-1 text-xs text-cream/40">
@@ -133,6 +135,21 @@ export default function NewThreadForm() {
           automatically resized in your browser before uploading.
         </p>
       </div>
+      {hasImage && (
+        <div className="flex items-start gap-2.5">
+          <input
+            type="checkbox"
+            name="imageRightsAttested"
+            id="imageRightsAttested"
+            required
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-navy-600 bg-navy-900 text-sage-500 focus:ring-sage-500"
+          />
+          <label htmlFor="imageRightsAttested" className="text-xs leading-relaxed text-cream/70">
+            I created this photo myself (including with AI tools) or otherwise have the right to
+            share it here.
+          </label>
+        </div>
+      )}
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
@@ -144,4 +161,3 @@ export default function NewThreadForm() {
     </form>
   );
 }
-
