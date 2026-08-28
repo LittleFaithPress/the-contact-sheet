@@ -40,6 +40,15 @@ export default function PrivacyPage() {
           banned.
         </p>
         <p>
+          Attaching a thread photo or submitting a Downloads-page file also records the moment you
+          confirmed you have the right to share it — see{" "}
+          <a href="/legal/terms" className="text-sage-400 underline hover:text-sage-300">
+            Terms of Service
+          </a>{" "}
+          section 3. That timestamp is stored alongside the upload itself, not separately kept
+          private.
+        </p>
+        <p>
           It does not ask for your real name, location, phone number, or date of birth at any
           point in normal use.
         </p>
