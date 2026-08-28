@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import SignOutButton from "@/components/SignOutButton";
-import Pill from "@/components/Pill";
+import NavMenu from "@/components/NavMenu";
 
 export default async function Navbar() {
   const supabase = createClient();
@@ -24,48 +23,25 @@ export default async function Navbar() {
 
   return (
     <header className="border-b border-navy-700 bg-navy-900">
-      <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-5">
+      {/* `relative` here is what the mobile dropdown menu in NavMenu.tsx
+          anchors itself against (it's positioned `absolute inset-x-0
+          top-full`) -- without this, it would position against the whole
+          page instead of just this header. */}
+      <nav className="relative mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-4 sm:py-5">
         <Link
           href="/"
-          className="font-serif text-lg font-semibold uppercase tracking-wide text-cream"
+          className="whitespace-nowrap font-serif text-base font-semibold uppercase tracking-wide text-cream sm:text-lg"
         >
           The Contact Sheet
         </Link>
-        <div className="flex items-center gap-4 font-mono text-xs">
-          <Link href="/downloads" className="text-cream/70 hover:text-sage-400">
-            Downloads
-          </Link>
-          {user ? (
-            <>
-              <Link
-                href="/new"
-                className="rounded-full bg-sage-500 px-3.5 py-1.5 font-medium text-navy-950 transition hover:bg-sage-400"
-              >
-                New thread
-              </Link>
-              <span className="flex items-center gap-1.5 text-cream/60">
-                {username ?? user.email}
-                {isAdmin && <Pill tone="sage">Admin</Pill>}
-                {isBanned && <Pill tone="danger">Banned</Pill>}
-              </span>
-              <SignOutButton />
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="text-cream/70 hover:text-sage-400">
-                Log in
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-full bg-sage-500 px-3.5 py-1.5 font-medium text-navy-950 transition hover:bg-sage-400"
-              >
-                Sign up
-              </Link>
-            </>
-          )}
-        </div>
+        <NavMenu
+          signedIn={!!user}
+          username={username}
+          email={user?.email ?? null}
+          isAdmin={isAdmin}
+          isBanned={isBanned}
+        />
       </nav>
     </header>
   );
 }
-
