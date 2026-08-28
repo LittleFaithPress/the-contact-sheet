@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import NavMenu from "@/components/NavMenu";
+import InactivityLogout from "@/components/InactivityLogout";
 
 export default async function Navbar() {
   const supabase = createClient();
@@ -23,6 +24,7 @@ export default async function Navbar() {
 
   return (
     <header className="border-b border-navy-700 bg-navy-900">
+      <InactivityLogout signedIn={!!user} />
       {/* `relative` here is what the mobile dropdown menu in NavMenu.tsx
           anchors itself against (it's positioned `absolute inset-x-0
           top-full`) -- without this, it would position against the whole
