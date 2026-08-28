@@ -48,6 +48,13 @@ export default function TermsPage() {
           you should only share work you actually have the right to share.
         </p>
         <p>
+          Attaching a thread photo or submitting a Downloads-page file requires checking a box
+          confirming you made it yourself — including with AI tools — or otherwise have the right
+          to share it. That confirmation, and when you gave it, is recorded against the upload. It
+          doesn&rsquo;t verify anything on its own; it&rsquo;s a record that you affirmed it, the
+          same way the rest of this section already asks of you.
+        </p>
+        <p>
           By posting, you&rsquo;re giving The Contact Sheet the permission it needs to store,
           display, and deliver that content as part of running the site (for example, showing
           your thread photo to other visitors, or letting someone download a resource
