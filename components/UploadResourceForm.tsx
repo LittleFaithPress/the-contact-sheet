@@ -70,6 +70,19 @@ export default function UploadResourceForm() {
         />
         <p className="mt-1 text-[11px] text-cream/45">PDF, ZIP, JPG, or PNG. 50 MB max.</p>
       </div>
+      <div className="flex items-start gap-2.5">
+        <input
+          type="checkbox"
+          name="rightsAttested"
+          id="rightsAttested"
+          required
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-navy-600 bg-navy-900 text-sage-500 focus:ring-sage-500"
+        />
+        <label htmlFor="rightsAttested" className="text-xs leading-relaxed text-cream/70">
+          I created this myself (including with AI tools) or otherwise have the right to share it
+          here.
+        </label>
+      </div>
       <p className="text-[11px] text-cream/45">
         Uploads are reviewed by an admin -- including an automatic security scan -- before
         they're visible to anyone else. This usually takes a little while, not instantly.
