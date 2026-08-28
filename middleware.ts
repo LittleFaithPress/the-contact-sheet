@@ -10,8 +10,16 @@
 // the last cookie written in a given request actually made it to the
 // browser, silently dropping the other. getAll/setAll below batches every
 // cookie change into a single response instead, so nothing gets lost.
+//
+// Every cookie written here also passes through sessionScopedCookieOptions()
+// (see lib/supabase/sessionScopedCookie.ts) so the auth cookie is a session
+// cookie -- cleared when the browser fully closes -- rather than the
+// 400-day cookie @supabase/ssr writes by default. This runs on every
+// request, including the session refresh triggered by getUser() below, so
+// it has to stay in place here too, not just in lib/supabase/server.ts.
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { sessionScopedCookieOptions } from "@/lib/supabase/sessionScopedCookie";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -37,7 +45,7 @@ export async function middleware(request: NextRequest) {
           });
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, sessionScopedCookieOptions(options));
           });
         },
       },
